@@ -1,35 +1,12 @@
 #
 # .zshrc
 #
-# @author Jeff Geerling
+# @author Yadavalli Santosh
 #
 
-# Colors.
-unset LSCOLORS
-export CLICOLOR=1
-export CLICOLOR_FORCE=1
-
-# Don't require escaping globbing characters in zsh.
-unsetopt nomatch
-
-# Nicer prompt.
-export PS1=$'\n'"%F{green} %*%F %3~ %F{white}"$'\n'"$ "
-
-# Enable plugins.
-plugins=(git brew history kubectl history-substring-search)
-
-# Custom $PATH with extra locations.
-export PATH=$HOME/Library/Python/3.8/bin:/opt/homebrew/bin:/usr/local/bin:/usr/local/sbin:$HOME/bin:$HOME/go/bin:/usr/local/git/bin:$HOME/.composer/vendor/bin:$PATH
-
-# Bash-style time output.
-export TIMEFMT=$'\nreal\t%*E\nuser\t%*U\nsys\t%*S'
-
-# Include alias file (if present) containing aliases for ssh, etc.
-if [ -f ~/.aliases ]
-then
-  source ~/.aliases
-fi
-
+###########################
+# ZSH Settings/Completions
+###########################
 # Set architecture-specific brew share path.
 arch_name="$(uname -m)"
 if [ "${arch_name}" = "x86_64" ]; then
@@ -40,53 +17,58 @@ else
     echo "Unknown architecture: ${arch_name}"
 fi
 
-# Allow history search via up/down keys.
-source ${share_path}/zsh-history-substring-search/zsh-history-substring-search.zsh
-bindkey "^[[A" history-substring-search-up
-bindkey "^[[B" history-substring-search-down
 
-# Git aliases.
-alias gs='git status'
-alias gc='git commit'
-alias gp='git pull --rebase'
-alias gcam='git commit -am'
-alias gl='git log --graph --pretty=format:"%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset" --abbrev-commit'
+# Colors.
+unset LSCOLORS
+export CLICOLOR=1
+export CLICOLOR_FORCE=1
 
-# Completions.
+# Don't require escaping globbing characters in zsh.
+unsetopt nomatch
+
+# Nicer prompt.
+# export PS1=$'\n'"%F{green} %*%F %3~ %F{white}"$'\n'"$ "
+export PS1=$''"%F{green} %*%F %3~ %F{white}"$''"$ "
+
+# Enable plugins.
+plugins=(sudo web-search brew history kubectl virtualenvwrapper)
+
+# Bash-style time output.
+export TIMEFMT=$'\nreal\t%*E\nuser\t%*U\nsys\t%*S'
+
+# Include alias file (if present) containing aliases for ssh, etc.
+if [ -f ~/.aliases ]
+then
+  source ~/.aliases
+fi
+
 autoload -Uz compinit && compinit
+
 # Case insensitive.
 zstyle ':completion:*' matcher-list 'm:{[:lower:][:upper:]}={[:upper:][:lower:]}' 'm:{[:lower:][:upper:]}={[:upper:][:lower:]} l:|=* r:|=*' 'm:{[:lower:][:upper:]}={[:upper:][:lower:]} l:|=* r:|=*' 'm:{[:lower:][:upper:]}={[:upper:][:lower:]} l:|=* r:|=*'
 
-# Git upstream branch syncer.
-# Usage: gsync master (checks out master, pull upstream, push origin).
-function gsync() {
- if [[ ! "$1" ]] ; then
-     echo "You must supply a branch."
-     return 0
- fi
+# Allow fuzzy search
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
- BRANCHES=$(git branch --list $1)
- if [ ! "$BRANCHES" ] ; then
-    echo "Branch $1 does not exist."
-    return 0
- fi
+# Load zsh-autosuggestions
+source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
 
- git checkout "$1" && \
- git pull upstream "$1" && \
- git push origin "$1"
-}
-
+####################
+# Homebrew Settings
+####################
 # Tell homebrew to not autoupdate every single time I run it (just once a week).
 export HOMEBREW_AUTO_UPDATE_SECS=604800
 
-# Super useful Docker container oneshots.
-# Usage: dockrun, or dockrun [centos7|fedora27|debian9|debian8|ubuntu1404|etc.]
-dockrun() {
+#########################################
+# Super useful Docker container oneshots
+#########################################
+# Usage: dr, or dr [centos7|fedora27|debian9|debian8|ubuntu1404|etc.]
+dr() {
  docker run -it geerlingguy/docker-"${1:-ubuntu1604}"-ansible /bin/bash
 }
 
 # Enter a running Docker container.
-function denter() {
+function deti() {
  if [[ ! "$1" ]] ; then
      echo "You must supply a container ID or name."
      return 0
@@ -96,7 +78,9 @@ function denter() {
  return 0
 }
 
-# Delete a given line number in the known_hosts file.
+######################################################
+# Delete a given line number in the known_hosts file
+######################################################
 knownrm() {
  re='^[0-9]+$'
  if ! [[ $1 =~ $re ]] ; then
@@ -106,8 +90,39 @@ knownrm() {
  fi
 }
 
-# Allow Composer to use almost as much RAM as Chrome.
-export COMPOSER_MEMORY_LIMIT=-1
+#############################################
+# PyENV/Python Virtual Environment Settings #
+#############################################
+# Pyenv stuff
+eval "$(pyenv init -)"
+
+export PYENV_ROOT="/Users/yvsssantosh/.pyenv"
+export PATH="$PYENV_ROOT/bin:$PATH"
+
+export PYENV_VIRTUALENVWRAPPER_PREFER_PYVENV="true"
+export WORKON_HOME=~/.virtualenvs
+pyenv virtualenvwrapper_lazy
+
+##################
+# Golang Settings
+##################
+# export GOPATH=$HOME/golang
+# export GOROOT=/usr/local/opt/go/libexec
+# export GOBIN=$GOPATH/bin
+# export PATH=$PATH:$GOPATH
+# export PATH=$PATH:$GOROOT/bin
+
+################
+# AWS Settings #
+################
+# AWS CLI Alias
+alias aws='docker run --rm -it -v ~/.aws:/root/.aws -v $(pwd):/aws amazon/aws-cli'
+
+###################
+# Google Cloud SDK
+###################
+# Enable below if installing google-cloud-sdk cask
+# source "$(brew --prefix)/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.zsh.inc"
 
 # Ask for confirmation when 'prod' is in a command string.
 #prod_command_trap () {
