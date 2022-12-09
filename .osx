@@ -20,7 +20,7 @@
 # @see: http://secrets.blacktree.com/?showapp=com.apple.finder
 # @see: https://github.com/herrbischoff/awesome-macos-command-line
 #
-# @author Jeff Geerling
+# @author Yadavalli Santosh
 
 # Warn that some commands will not be run if the script is not run as root.
 if [[ $EUID -ne 0 ]]; then
@@ -95,7 +95,7 @@ defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool false
 defaults write com.apple.screencapture location -string "${HOME}/Downloads"
 
 # Save screenshots in PNG format (other options: BMP, GIF, JPG, PDF, TIFF)
-defaults write com.apple.screencapture type -string "png"
+defaults write com.apple.screencapture type -string "jpg"
 
 # Disable shadow in screenshots
 defaults write com.apple.screencapture disable-shadow -bool true
@@ -155,7 +155,7 @@ defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool true
 /usr/libexec/PlistBuddy -c "Set :FK_StandardViewSettings:IconViewSettings:iconSize 64" ~/Library/Preferences/com.apple.finder.plist
 /usr/libexec/PlistBuddy -c "Set :StandardViewSettings:IconViewSettings:iconSize 64" ~/Library/Preferences/com.apple.finder.plist
 
-# Use column view in all Finder windows by default
+# Use icon view in all Finder windows by default
 # Four-letter codes for the other view modes: `icnv`, `Nlsv`, `clmv`, `Flwv`
 defaults write com.apple.finder FXPreferredViewStyle -string "icnv"
 
@@ -167,7 +167,7 @@ chflags nohidden ~/Library
 ###############################################################################
 
 # Set the icon size of Dock items
-defaults write com.apple.dock tilesize -int 30
+defaults write com.apple.dock tilesize -int 64
 
 # Speed up Mission Control animations
 defaults write com.apple.dock expose-animation-duration -float 0.15
@@ -191,14 +191,15 @@ defaults write com.apple.universalaccess reduceTransparency -bool true
 # 11: Launchpad
 # 12: Notification Center
 # Bottom right screen corner → Mission Control
-defaults write com.apple.dock wvous-br-corner -int 2
-defaults write com.apple.dock wvous-br-modifier -int 0
+# Default => Notes
 # Top right screen corner → Desktop
 defaults write com.apple.dock wvous-tr-corner -int 4
 defaults write com.apple.dock wvous-tr-modifier -int 0
 # Bottom left screen corner → Put display to sleep
 defaults write com.apple.dock wvous-bl-corner -int 10
 defaults write com.apple.dock wvous-bl-modifier -int 0
+# Top left screen corner → Mission Control
+# Default => None
 
 ###############################################################################
 # Safari & WebKit                                                             #
@@ -248,7 +249,7 @@ defaults write com.apple.ActivityMonitor ShowCategory -int 0
 ###############################################################################
 
 # Disable smart quotes as it’s annoying for messages that contain code
-# defaults write com.apple.messageshelper.MessageController SOInputLineSettings -dict-add "automaticQuoteSubstitutionEnabled" -bool false
+defaults write com.apple.messageshelper.MessageController SOInputLineSettings -dict-add "automaticQuoteSubstitutionEnabled" -bool false
 
 # Disable continuous spell checking
 defaults write com.apple.messageshelper.MessageController SOInputLineSettings -dict-add "continuousSpellCheckingEnabled" -bool false

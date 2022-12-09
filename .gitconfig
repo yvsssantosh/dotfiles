@@ -1,6 +1,6 @@
 [user]
-  name = Jeff Geerling
-  email = geerlingguy@mac.com
+  name = Yadavalli Santosh
+  email = yvss.santosh@gmail.com
 [core]
   editor = vi
   excludesfile = ~/.gitignore
@@ -13,7 +13,7 @@
 [init]
   defaultBranch = master
 [web]
-  browser = google-chrome
+  browser = brave-browser
 [credential]
   helper = osxkeychain
 [push]

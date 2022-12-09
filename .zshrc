@@ -28,15 +28,15 @@ unsetopt nomatch
 
 # Nicer prompt.
 # export PS1=$'\n'"%F{green} %*%F %3~ %F{white}"$'\n'"$ "
-export PS1=$''"%F{green} %*%F %3~ %F{white}"$''"$ "
+# export PS1=$''"%F{green} %*%F %3~ %F{white}"$''"$ "
 
 # Enable plugins.
-plugins=(sudo web-search brew history kubectl virtualenvwrapper)
+plugins=(sudo web-search brew history kubectl virtualenvwrapper zsh-autosuggestions fzf)
 
 # Bash-style time output.
 export TIMEFMT=$'\nreal\t%*E\nuser\t%*U\nsys\t%*S'
 
-# Include alias file (if present) containing aliases for ssh, etc.
+
 if [ -f ~/.aliases ]
 then
   source ~/.aliases
@@ -46,12 +46,6 @@ autoload -Uz compinit && compinit
 
 # Case insensitive.
 zstyle ':completion:*' matcher-list 'm:{[:lower:][:upper:]}={[:upper:][:lower:]}' 'm:{[:lower:][:upper:]}={[:upper:][:lower:]} l:|=* r:|=*' 'm:{[:lower:][:upper:]}={[:upper:][:lower:]} l:|=* r:|=*' 'm:{[:lower:][:upper:]}={[:upper:][:lower:]} l:|=* r:|=*'
-
-# Allow fuzzy search
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-
-# Load zsh-autosuggestions
-source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
 
 ####################
 # Homebrew Settings
@@ -81,7 +75,7 @@ function deti() {
 ######################################################
 # Delete a given line number in the known_hosts file
 ######################################################
-knownrm() {
+known_rm() {
  re='^[0-9]+$'
  if ! [[ $1 =~ $re ]] ; then
    echo "error: line number missing" >&2;
@@ -118,25 +112,20 @@ pyenv virtualenvwrapper_lazy
 # AWS CLI Alias
 alias aws='docker run --rm -it -v ~/.aws:/root/.aws -v $(pwd):/aws amazon/aws-cli'
 
-###################
-# Google Cloud SDK
-###################
-# Enable below if installing google-cloud-sdk cask
-# source "$(brew --prefix)/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.zsh.inc"
+##############################################################
+# New ZSHRC Settings
+##############################################################
+# Goto directories list
+[[ -f ~/.zsh/goto.zsh ]] && source ~/.zsh/goto.zsh
 
-# Ask for confirmation when 'prod' is in a command string.
-#prod_command_trap () {
-#  if [[ $BASH_COMMAND == *prod* ]]
-#  then
-#    read -p "Are you sure you want to run this command on prod [Y/n]? " -n 1 -r
-#    if [[ $REPLY =~ ^[Yy]$ ]]
-#    then
-#      echo -e "\nRunning command \"$BASH_COMMAND\" \n"
-#    else
-#      echo -e "\nCommand was not run.\n"
-#      return 1
-#    fi
-#  fi
-#}
-#shopt -s extdebug
-#trap prod_command_trap DEBUG
+# Include alias file (if present) containing aliases for ssh, etc.
+[[ -f ~/.zsh/aliases.zsh ]] && source ~/.zsh/aliases.zsh
+[[ -f ~/.zsh/starship.zsh ]] && source ~/.zsh/starship.zsh
+[[ -f ~/.zsh/functions.zsh ]] && source ~/.zsh/functions.zsh
+# [[ -f ~/.zsh/nvm.zsh ]] && source ~/.zsh/nvm.zsh
+
+# Load Starship
+eval "$(starship init zsh)"
+
+# Load Direnv
+eval "$(direnv hook zsh)"
